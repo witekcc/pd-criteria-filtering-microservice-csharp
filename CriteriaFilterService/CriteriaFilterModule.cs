@@ -10,11 +10,10 @@ namespace CriteriaFilterService
 {
     public class CriteriaFilterModule : Nancy.NancyModule
     {
-        private ICriteriaFilterController _CriteraController = new CriteriaFilterController(StackExchange.Redis.ConnectionMultiplexer.Connect("localhost"));
+        private ICriteriaFilterController _CriteraController = new CriteriaFilterController(StackExchange.Redis.ConnectionMultiplexer.Connect("localhost").GetDatabase());
 
         public CriteriaFilterModule()
         {           
-
             Post["/criteria"] = parameters =>
             {
                 var criteria = this.Bind<Criteria>();

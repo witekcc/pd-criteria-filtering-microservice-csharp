@@ -13,9 +13,9 @@ namespace CriteriaFilterService
     {
         IDatabase _database;
 
-        public CriteriaFilterController(ConnectionMultiplexer redis)
+        public CriteriaFilterController(IDatabase database)
         {
-            _database = redis.GetDatabase();
+            _database = database;
         }
 
         public dynamic CreateCriteria(Criteria criteria)
