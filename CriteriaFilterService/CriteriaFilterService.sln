@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CriteriaFilterService", "CriteriaFilterService.csproj", "{AB7C9064-D157-4530-B719-363EFD41E230}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CriteriaFilterService.Test", "..\CriteriaFilterService.Test\CriteriaFilterService.Test.csproj", "{137C9ED6-98E1-4495-A450-0BD61DAAE85A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NancyHost", "NancyHost\NancyHost.csproj", "{CBCBBA77-19A2-4350-BB64-A0FF01450821}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AB7C9064-D157-4530-B719-363EFD41E230}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB7C9064-D157-4530-B719-363EFD41E230}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB7C9064-D157-4530-B719-363EFD41E230}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB7C9064-D157-4530-B719-363EFD41E230}.Release|Any CPU.Build.0 = Release|Any CPU
+		{137C9ED6-98E1-4495-A450-0BD61DAAE85A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{137C9ED6-98E1-4495-A450-0BD61DAAE85A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{137C9ED6-98E1-4495-A450-0BD61DAAE85A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{137C9ED6-98E1-4495-A450-0BD61DAAE85A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBCBBA77-19A2-4350-BB64-A0FF01450821}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBCBBA77-19A2-4350-BB64-A0FF01450821}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBCBBA77-19A2-4350-BB64-A0FF01450821}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBCBBA77-19A2-4350-BB64-A0FF01450821}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
