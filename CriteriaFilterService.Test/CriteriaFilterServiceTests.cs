@@ -139,6 +139,35 @@ namespace CriteriaFilterService.Test
             
         }
 
+        [TestMethod]
+        public void Should_return_campaign_12_when_filtering_on_age()
+        {
+            // Given
+            var bootstrapper = new DefaultNancyBootstrapper();
+            var browser = new Browser(bootstrapper);
+
+            var criteria = GenerateCriteria();
+
+            browser.Post("/criteria", with =>
+            {
+                with.Header("Content-Type", "application/json");
+                with.Body(JsonConvert.SerializeObject(criteria));
+            });
+
+            User user = new User(){Age = "23"};
+
+            var result = browser.Get("/filters/12", with =>
+            {
+                with.Header("Content-Type", "application/json");
+                with.Body(JsonConvert.SerializeObject(user));
+            });
+            
+            // Then
+            Assert.AreEqual(result.Body.AsString().Contains("12"), true);
+            Assert.AreEqual(result.StatusCode, HttpStatusCode.OK);
+            
+        }
+
         [ClassCleanup]
         private void DeleteRecord()
         {

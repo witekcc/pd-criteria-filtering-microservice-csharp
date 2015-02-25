@@ -13,6 +13,6 @@ namespace CriteriaFilterService.Models
         [DataMember(Name = "user")]
         public User User { get; set; }
         [DataMember(Name = "campaignId")]
-        public List<string> CampaignId { get; set; }
+        public List<string> CampaignIds { get; set; }
     }
 }

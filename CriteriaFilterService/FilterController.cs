@@ -1,4 +1,5 @@
 ﻿using CriteriaFilterService.Models;
+using Newtonsoft.Json;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -13,23 +14,34 @@ namespace CriteriaFilterService
         IDatabase _database;
         IServer _server;
 
-        FilterController(IDatabase database, IServer server)
+        public FilterController(IDatabase database)
         {
             _database = database;
-            _server = server;
+            //_server = server;
         }
 
-        public dynamic GetFilter(FilterRequest filter)
+        public List<string> GetFilter(FilterRequest filter)
         {
+            List<string> campaignsMatched = new List<string>();
 
-            if (filter.CampaignId != null)
+            if (filter.CampaignIds != null)
             {
-                //foreach id get data and filter
-                //results = _database.StringGet(filter.CampaignId);
-            }
-            //else get EVERYTHING
+                foreach (var campaign in filter.CampaignIds)
+                {
+                    string json = _database.StringGet(campaign);
+                    if (json != null)
+                    {
+                        var criteria = JsonConvert.DeserializeObject<Criteria>(json);
 
-            throw new NotImplementedException();
+                        if(CriteriaHelper.MeetsCriteria(filter.User, criteria))
+                        {
+                            campaignsMatched.Add(campaign);
+                        }
+                    }
+                }
+            }
+
+            return campaignsMatched;
         }
 
 

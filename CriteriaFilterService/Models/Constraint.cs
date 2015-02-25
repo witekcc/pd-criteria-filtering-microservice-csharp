@@ -11,12 +11,12 @@ namespace CriteriaFilterService.Models
     public struct Constraint
     {
         private string _value;
-        
+                        
         public Constraint(string value)
         {
             _value = value;
         }
-
+        
         [IgnoreDataMember]
         public bool IsRange 
         {
@@ -72,6 +72,7 @@ namespace CriteriaFilterService.Models
         {
             return constraint._value;
         }
+              
 
     }
 }

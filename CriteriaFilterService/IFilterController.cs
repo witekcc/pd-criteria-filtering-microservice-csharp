@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace CriteriaFilterService
 {
-    interface IFilterController
+    public interface IFilterController
     {
-        dynamic GetFilter(FilterRequest filter);
+        List<string> GetFilter(FilterRequest filter);
     }
 }

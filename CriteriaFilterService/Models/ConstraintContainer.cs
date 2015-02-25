@@ -11,10 +11,10 @@ namespace CriteriaFilterService.Models
     [Serializable]
     public class ConstraintContainer : ISerializable
     {
-        //[DataMember(Name ="inc")]
+
         [IgnoreDataMember]
         public List<Constraint> Inc { get; set; }
-        //[DataMember(Name ="exc")]
+
         [IgnoreDataMember]
         public List<Constraint> Exc { get; set; }
 
