@@ -4,6 +4,8 @@ using Nancy;
 using Nancy.Testing;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using CriteriaFilterService.Models;
+using System.IO;
 
 namespace CriteriaFilterService.Test
 {
@@ -16,14 +18,13 @@ namespace CriteriaFilterService.Test
             {
                 CampaignId = "12",
                 CampaignUUID = "A02AECA1-C7DD-4FC5-ADDF-ED5486F77A09",
-                Constraints = new
-                {
-                    phone = new { inc = new[] { "5000000000-6000000000" }, exc = new[] { "5555555551" } },
-                    age = new { inc = new[] { "21-35" }, exc = new[] { "26" } },
-                    zip = new { inc = new[] { "12345-12954", "54313" }, exc = new[] { "" } }
-                }
+                Constraints = new Dictionary<string, ConstraintContainer>()
             };
 
+            criteria.Constraints.Add("phone", new ConstraintContainer() { Inc = new List<Constraint>() { new Constraint("5000000000-6000000000") }, Exc = new List<Constraint>() { new Constraint("5555550000") } });
+            criteria.Constraints.Add("age", new ConstraintContainer() { Inc = new List<Constraint>() { new Constraint("21-35"), new Constraint("40")}, Exc = new List<Constraint>() { new Constraint("26") } });
+            criteria.Constraints.Add("zip", new ConstraintContainer() { Inc = new List<Constraint>() { new Constraint("12345-12549"), new Constraint("54313") }, Exc = new List<Constraint>() { new Constraint("12347-12349")} });
+            
             return criteria;
         }
 
@@ -56,7 +57,8 @@ namespace CriteriaFilterService.Test
             // When
             var result = browser.Post("/criteria", with =>
             {
-                with.JsonBody<Criteria>(GenerateCriteria());                
+                with.Header("Content-Type", "application/json");
+                with.Body(JsonConvert.SerializeObject(GenerateCriteria()));              
             });
 
             // Then
@@ -72,13 +74,15 @@ namespace CriteriaFilterService.Test
 
             browser.Post("/criteria", with =>
             {
-                with.JsonBody<Criteria>(GenerateCriteria());
+                with.Header("Content-Type", "application/json");
+                with.Body(JsonConvert.SerializeObject(GenerateCriteria()));
             });
 
             // When
             var result = browser.Post("/criteria", with =>
             {
-                with.JsonBody<Criteria>(GenerateCriteria());
+                with.Header("Content-Type", "application/json");
+                with.Body(JsonConvert.SerializeObject(GenerateCriteria()));
             });
 
             // Then
@@ -94,6 +98,7 @@ namespace CriteriaFilterService.Test
             
             browser.Post("/criteria", with =>
             {
+                with.Header("Content-Type", "application/json");
                 with.JsonBody<Criteria>(GenerateCriteria());
             });
 
@@ -110,24 +115,27 @@ namespace CriteriaFilterService.Test
             // Given
             var bootstrapper = new DefaultNancyBootstrapper();
             var browser = new Browser(bootstrapper);
-
+            
             var criteria = GenerateCriteria();
 
             browser.Post("/criteria", with =>
             {
-                with.JsonBody<Criteria>(criteria);
+                with.Header("Content-Type", "application/json");
+                with.Body(JsonConvert.SerializeObject(criteria));
+                //with.JsonBody<Criteria>(criteria);
             });
 
-            criteria.Constraints = new { age = new { inc = new[] { "55-60" }, exc = new[] { "56" } } };
+            criteria.Constraints["age"].Exc[0] = "56";
             
             // When
             var result = browser.Put("/criteria/12", with =>
             {
-                with.JsonBody<Criteria>(criteria);
+                with.Header("Content-Type", "application/json");
+                with.Body(JsonConvert.SerializeObject(criteria));                
             });
 
             // Then
-            Assert.AreEqual(result.Body.DeserializeJson<Criteria>().Constraints["Age"]["Exc"][0], "56");
+            Assert.AreEqual(JsonConvert.DeserializeObject<Criteria>(result.Body.AsString()).Constraints["age"].Exc[0], "56");
             
         }
 
