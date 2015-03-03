@@ -4,6 +4,7 @@ using StackExchange.Redis;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,13 +13,12 @@ namespace CriteriaFilterService
 {
     public class FilterController : IFilterController
     {
-        IDatabase _database;
-        IServer _server;
 
-        public FilterController(ConnectionMultiplexer connection)
+        RedisHelper _redis;
+        
+        public FilterController(RedisHelper redis)
         {
-            _database = connection.GetDatabase();
-            _server = connection.GetServer("localhost", 6379);
+            _redis = redis;
         }
 
         public List<string> GetFilteredCampaigns(FilterRequest filter)
@@ -33,13 +33,13 @@ namespace CriteriaFilterService
             }
             else
             {
-                enumerable = _server.Keys();
+                enumerable = _redis.GetAllCriteriaId();
             }
             
             foreach (var campaign in enumerable)
             {
-                string match = GetMatchedCampaign(filter.User, campaign.ToString());
-
+                string match = GetMatchedCampaign(filter.User, campaign.ToString(), enumerable is IEnumerable<RedisValue>);
+                
                 if (match != null)
                     campaignsMatched.Add(match);
             }
@@ -47,9 +47,18 @@ namespace CriteriaFilterService
             return campaignsMatched;
         }
 
-        private string GetMatchedCampaign(User user, string campaign)
+        private string GetMatchedCampaign(User user, string id, bool byCriteria = false)
         {
-            string json = _database.StringGet(campaign);
+            string json; 
+            if(byCriteria)
+            {
+                json = _redis.GetCriteriaById(id);
+            }
+            else
+            {
+                json = _redis.GetCriteriaByCampaignId(id); 
+            }
+
             if (json != null)
             {
                 var criteria = JsonConvert.DeserializeObject<Criteria>(json);
@@ -59,9 +68,10 @@ namespace CriteriaFilterService
                     return criteria.CampaignId;
                 }
             }
-            
+
             return null;
         }
+               
 
     }
 }

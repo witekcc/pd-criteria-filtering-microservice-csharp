@@ -15,9 +15,9 @@ namespace CriteriaFilterService
     {
         IFilterController _controller;
 
-        public FilterModule()
+        public FilterModule(FilterController controller)
         {
-            _controller = new FilterController(StackExchange.Redis.ConnectionMultiplexer.Connect("localhost")); ;
+            _controller = controller;
 
             Get["/filters/{id?}"] = parameters =>
                 {
