@@ -56,9 +56,6 @@ namespace CriteriaFilterService
             }
 
             return _database.StringGet(id);
-            
-            //return all; not sure how to do this with Redis yet
-            return HttpStatusCode.OK;
         }
 
         public dynamic UpdateCriteria(Criteria criteria)

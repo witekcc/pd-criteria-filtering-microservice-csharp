@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Nancy.ModelBinding;
 using CriteriaFilterService.Models;
 using Nancy;
+using System.Dynamic;
+using Nancy.Responses.Negotiation;
 
 namespace CriteriaFilterService
 {
@@ -15,19 +17,26 @@ namespace CriteriaFilterService
 
         public FilterModule()
         {
-            _controller = new FilterController(StackExchange.Redis.ConnectionMultiplexer.Connect("localhost").GetDatabase()); ;
+            _controller = new FilterController(StackExchange.Redis.ConnectionMultiplexer.Connect("localhost")); ;
 
             Get["/filters/{id?}"] = parameters =>
                 {
-                    var user = this.Bind<User>();
                     
-                    FilterRequest filter = new FilterRequest() { CampaignIds = new List<string>(), User = user };
-                    filter.CampaignIds.Add(parameters.id);
-                    
-                    List<string> results = _controller.GetFilter(filter);
+                    FilterRequest filter = null;
 
-                    return Response.AsJson(results);                                      
-               
+                    if (parameters.id != null)
+                    {
+                        filter = new FilterRequest() { CampaignIds = new List<string>(), User = this.Bind<User>() };
+                        filter.CampaignIds.Add(parameters.id);
+                    }
+                    else
+                    {
+                        filter = this.Bind<FilterRequest>();
+                    }                                        
+
+                    return Negotiate
+                        .WithModel(_controller.GetFilteredCampaigns(filter))
+                        .WithStatusCode(HttpStatusCode.OK);
                 };
         }
     }

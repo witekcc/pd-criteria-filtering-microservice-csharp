@@ -10,24 +10,13 @@ using System.IO;
 namespace CriteriaFilterService.Test
 {
     [TestClass]
-    public class CriteriaFilterServiceTests
+    public class CriteriaFilterModuleTests
     {
-        private Criteria GenerateCriteria()
+        public CriteriaFilterModuleTests()
         {
-            Criteria criteria = new Criteria()
-            {
-                CampaignId = "12",
-                CampaignUUID = "A02AECA1-C7DD-4FC5-ADDF-ED5486F77A09",
-                Constraints = new Dictionary<string, ConstraintContainer>()
-            };
 
-            criteria.Constraints.Add("phone", new ConstraintContainer() { Inc = new List<Constraint>() { new Constraint("5000000000-6000000000") }, Exc = new List<Constraint>() { new Constraint("5555550000") } });
-            criteria.Constraints.Add("age", new ConstraintContainer() { Inc = new List<Constraint>() { new Constraint("21-35"), new Constraint("40")}, Exc = new List<Constraint>() { new Constraint("26") } });
-            criteria.Constraints.Add("zip", new ConstraintContainer() { Inc = new List<Constraint>() { new Constraint("12345-12549"), new Constraint("54313") }, Exc = new List<Constraint>() { new Constraint("12347-12349")} });
-            
-            return criteria;
         }
-
+       
         [TestMethod]
         public void Should_return_404_when_not_passing_an_id()
         {
@@ -58,7 +47,7 @@ namespace CriteriaFilterService.Test
             var result = browser.Post("/criteria", with =>
             {
                 with.Header("Content-Type", "application/json");
-                with.Body(JsonConvert.SerializeObject(GenerateCriteria()));              
+                with.Body(JsonConvert.SerializeObject(CriteriaGenerator.GenerateCriteria()));              
             });
 
             // Then
@@ -75,14 +64,14 @@ namespace CriteriaFilterService.Test
             browser.Post("/criteria", with =>
             {
                 with.Header("Content-Type", "application/json");
-                with.Body(JsonConvert.SerializeObject(GenerateCriteria()));
+                with.Body(JsonConvert.SerializeObject(CriteriaGenerator.GenerateCriteria()));
             });
 
             // When
             var result = browser.Post("/criteria", with =>
             {
                 with.Header("Content-Type", "application/json");
-                with.Body(JsonConvert.SerializeObject(GenerateCriteria()));
+                with.Body(JsonConvert.SerializeObject(CriteriaGenerator.GenerateCriteria()));
             });
 
             // Then
@@ -99,7 +88,7 @@ namespace CriteriaFilterService.Test
             browser.Post("/criteria", with =>
             {
                 with.Header("Content-Type", "application/json");
-                with.JsonBody<Criteria>(GenerateCriteria());
+                with.JsonBody<Criteria>(CriteriaGenerator.GenerateCriteria());
             });
 
             // When
@@ -115,14 +104,13 @@ namespace CriteriaFilterService.Test
             // Given
             var bootstrapper = new DefaultNancyBootstrapper();
             var browser = new Browser(bootstrapper);
-            
-            var criteria = GenerateCriteria();
+
+            var criteria = CriteriaGenerator.GenerateCriteria();
 
             browser.Post("/criteria", with =>
             {
                 with.Header("Content-Type", "application/json");
                 with.Body(JsonConvert.SerializeObject(criteria));
-                //with.JsonBody<Criteria>(criteria);
             });
 
             criteria.Constraints["age"].Exc[0] = "56";
@@ -138,38 +126,10 @@ namespace CriteriaFilterService.Test
             Assert.AreEqual(JsonConvert.DeserializeObject<Criteria>(result.Body.AsString()).Constraints["age"].Exc[0], "56");
             
         }
-
-        [TestMethod]
-        public void Should_return_campaign_12_when_filtering_on_age()
-        {
-            // Given
-            var bootstrapper = new DefaultNancyBootstrapper();
-            var browser = new Browser(bootstrapper);
-
-            var criteria = GenerateCriteria();
-
-            browser.Post("/criteria", with =>
-            {
-                with.Header("Content-Type", "application/json");
-                with.Body(JsonConvert.SerializeObject(criteria));
-            });
-
-            User user = new User(){Age = "23"};
-
-            var result = browser.Get("/filters/12", with =>
-            {
-                with.Header("Content-Type", "application/json");
-                with.Body(JsonConvert.SerializeObject(user));
-            });
-            
-            // Then
-            Assert.AreEqual(result.Body.AsString().Contains("12"), true);
-            Assert.AreEqual(result.StatusCode, HttpStatusCode.OK);
-            
-        }
+              
 
         [ClassCleanup]
-        private void DeleteRecord()
+        public static void DeleteRecord()
         {
             var bootstrapper = new DefaultNancyBootstrapper();
             var browser = new Browser(bootstrapper);

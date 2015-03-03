@@ -9,6 +9,6 @@ namespace CriteriaFilterService
 {
     public interface IFilterController
     {
-        List<string> GetFilter(FilterRequest filter);
+        List<string> GetFilteredCampaigns(FilterRequest filter);
     }
 }

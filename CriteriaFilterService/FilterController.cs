@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using StackExchange.Redis;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,38 +15,53 @@ namespace CriteriaFilterService
         IDatabase _database;
         IServer _server;
 
-        public FilterController(IDatabase database)
+        public FilterController(ConnectionMultiplexer connection)
         {
-            _database = database;
-            //_server = server;
+            _database = connection.GetDatabase();
+            _server = connection.GetServer("localhost", 6379);
         }
 
-        public List<string> GetFilter(FilterRequest filter)
+        public List<string> GetFilteredCampaigns(FilterRequest filter)
         {
             List<string> campaignsMatched = new List<string>();
 
+            IEnumerable enumerable = null;
+    
             if (filter.CampaignIds != null)
             {
-                foreach (var campaign in filter.CampaignIds)
-                {
-                    string json = _database.StringGet(campaign);
-                    if (json != null)
-                    {
-                        var criteria = JsonConvert.DeserializeObject<Criteria>(json);
+                enumerable = filter.CampaignIds;
+            }
+            else
+            {
+                enumerable = _server.Keys();
+            }
+            
+            foreach (var campaign in enumerable)
+            {
+                string match = GetMatchedCampaign(filter.User, campaign.ToString());
 
-                        if(CriteriaHelper.MeetsCriteria(filter.User, criteria))
-                        {
-                            campaignsMatched.Add(campaign);
-                        }
-                    }
-                }
+                if (match != null)
+                    campaignsMatched.Add(match);
             }
 
             return campaignsMatched;
         }
 
+        private string GetMatchedCampaign(User user, string campaign)
+        {
+            string json = _database.StringGet(campaign);
+            if (json != null)
+            {
+                var criteria = JsonConvert.DeserializeObject<Criteria>(json);
 
-
+                if (CriteriaHelper.MeetsCriteria(user, criteria))
+                {
+                    return criteria.CampaignId;
+                }
+            }
+            
+            return null;
+        }
 
     }
 }

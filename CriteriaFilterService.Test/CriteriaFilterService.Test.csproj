@@ -70,7 +70,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="CriteriaFilterServiceTests.cs" />
+    <Compile Include="CriteriaFilterModuleTests.cs" />
+    <Compile Include="CriteriaGenerator.cs" />
+    <Compile Include="FilterModuleTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
